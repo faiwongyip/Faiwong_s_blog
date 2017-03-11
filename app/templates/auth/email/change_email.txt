@@ -1,0 +1,11 @@
+Dear {{ user.name }},
+
+To confirm your email address click on the following link:
+
+{{ url_for('auth.change_email', token=token, _external=True) }}
+
+Sincerely,
+
+The Flasky Team
+
+Note: replies to tjis email address are not monitored.
