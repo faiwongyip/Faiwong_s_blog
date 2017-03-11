@@ -43,7 +43,7 @@ class ProductionConfig(Config):
     def init_app(cls, app):
         Config.init_app(app)
         import logging
-        from logging.handler import SMTPHandler
+        from logging import SMTPHandler
         cerdentials = None
         secure = None
         if getattr(cls, 'MAIL_USEBANE', None):
