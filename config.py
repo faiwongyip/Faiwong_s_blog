@@ -9,7 +9,7 @@ class Config:
     MAIL_SERVER = 'smtp.qq.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = '1932840832@qq.com' #os.environ.get('MAIL_USERNAME')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_MAIL_SENDER = 'Flasky Admin <1932840832@qq.com>'
@@ -43,15 +43,15 @@ class ProductionConfig(Config):
     def init_app(cls, app):
         Config.init_app(app)
         import logging
-        from logging import SMTPHandler
+        from logging.handlers import SMTPHandler
         cerdentials = None
         secure = None
-        if getattr(cls, 'MAIL_USEBANE', None):
+        if getattr(cls, 'MAIL_USEBANE', None) is not None:
             cregentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
             if getattr(cls, 'MAIL_USE_TLS', None):
                 secure = ()
-        mail_hadler = SMTPHndler(
-            mail_host=(cls.MAIL_SERVER, cls.MAIL_PORT),
+        mail_handler = SMTPHandler(
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
             fromaddr=cls.FLASKY_MAIL_SENDER,
             toaddrs=[cls.FLASKY_ADMIN],
             subject=cls.FLASKY_MAIL_SUBJECT_PREFIX + ' Application Error',
@@ -71,11 +71,11 @@ class HerokuConfig(ProductionConfig):
         import logging
         from logging import StreamHandler
         file_handler = StreamHandler()
-        file_handler.setLevel(logging.ERROR)
+        file_handler.setLevel(logging.WARNING)
         app.logger.addhandler(file_handler)
         
         from werkzeug.contrib.fixers import ProxyFix
-        app.wsgi_app = ProxyFix(app.wsgu_app)
+        app.wsgi_app = ProxyFix(app.wsgi_app)
         
     
 config = {
