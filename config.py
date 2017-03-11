@@ -72,7 +72,7 @@ class HerokuConfig(ProductionConfig):
         from logging import StreamHandler
         file_handler = StreamHandler()
         file_handler.setLevel(logging.WARNING)
-        app.logger.addhandler(file_handler)
+        app.logger.addHandler(file_handler)
         
         from werkzeug.contrib.fixers import ProxyFix
         app.wsgi_app = ProxyFix(app.wsgi_app)
