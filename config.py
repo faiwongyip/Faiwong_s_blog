@@ -47,7 +47,7 @@ class ProductionConfig(Config):
         cerdentials = None
         secure = None
         if getattr(cls, 'MAIL_USEBANE', None) is not None:
-            cregentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
             if getattr(cls, 'MAIL_USE_TLS', None):
                 secure = ()
         mail_handler = SMTPHandler(
@@ -55,7 +55,7 @@ class ProductionConfig(Config):
             fromaddr=cls.FLASKY_MAIL_SENDER,
             toaddrs=[cls.FLASKY_ADMIN],
             subject=cls.FLASKY_MAIL_SUBJECT_PREFIX + ' Application Error',
-            credentials=credetials,
+            credentials=credentials,
             secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
