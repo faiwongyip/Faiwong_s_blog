@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Flasky - {{ title }} {{ user.username }}{% endblock %}
+{% block title %}{{ title }} {{ user.username }}{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>{{ title }} {{ user.username }}<h1>
-</div>
-<table class="table table-hover followers">
-    <thead><tr><th>User</th><th>Since</th></tr></thead>
-    {% for follow in follows %}
-    <tr>
-        {% if follow.user != current_user %}
-        <td>
-            <a href="{{ url_for('.user', username=follow.user.username) }}">
-                <img class="img-rounded" src="{{ follow.user.gravatar(size=32) }}">
-                {{ follow.user.username }}
-            </a>
-        </td>
-        <td>{{ moment(follow.timestamp).format('L') }}</td>
-        {% endif %}
-    <tr>
-    {% endfor %}
-</table>
-</div class="pagination">
-    {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
+<div class="container">
+    <div class="row">
+        <div class="page-header"><h3><i class="fa fa-users" aria-hidden="true"></i> 关注者</h3></div>
+        <table class="table table-hover followers">
+            <thead><tr><th>用户</th><th>时间</th></tr></thead>
+            {% for follow in follows %}
+            <tr>
+                {% if follow.user != current_user %}
+                <td>
+                    <a href="{{ url_for('.user', username=follow.user.username) }}">
+                        <img class="img-rounded" src="{{ follow.user.gravatar(size=32) }}">
+                        {{ follow.user.username }}
+                    </a>
+                </td>
+                <td>{{ moment(follow.timestamp).format('L') }}</td>
+                {% endif %}
+            <tr>
+            {% endfor %}
+        </table>
+        <div style="float:right">
+            {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
+        </div>
+    </div>
 </div>
 {% endblock %}

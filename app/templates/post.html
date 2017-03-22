@@ -2,23 +2,65 @@
 {% import "_macros.html" as macros %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky - Post{% endblock %}
+{% block title %}文章{% endblock %}
 
 {% block page_content %}
-{% include '_posts.html' %}
-<h4 id="comments">Comments</h4>
-{% if current_user.can(Permission.COMMENT) %}
-<div class="comment-form">
-    {{ wtf.quick_form(form) }}
-</div>
-{% endif %}
 
-{% include '_comments.html' %}
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <article class="article the-font" style="box-shadow: rgb(167, 163, 163) 5px 5px 20px;background:#fffffc;">
+                <h2>{{ post.title }}</h2>
+                <p style="padding-left:20px;">
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                    <a href="{{ url_for('.user', username=post.author.username) }}"> {{ post.author.username }}</a> &nbsp
+                    <small>
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                        <span style="color:#8C8C8C;"> {{ moment(post.timestamp).format('YYYY/MM/DD') }}</span>
+                    </small>
+                    <a href="#" style="float:right"><span class="label label-success"><i class="fa fa-paperclip" aria-hidden="true"></i> {{ post.category.name }}</span></a>
+                </p>
+                
+                <div class="post-author">
+                    
+                </div>
+                <div class="post-alert">本博客采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议</div>
+                
+                <div class="post-body">
+                {% if post.body_html %}
+                {{ post.body_html | safe }}
+                {% else %}
+                {{ post.body }}
+                {% endif %}
+                </div>
+                <div style="border-top:1px solid #EBEBEB;padding:10px 5px;margin-top:20px;">
+                    <span style="float:right">
+                        <a href="{{ url_for('.post', id=post.id) }}#comments"><span class="label label-primary"><i class="fa fa-commenting" aria-hidden="true"></i> {{ post.comments.count() }} 评论</span></a>
+                        {% if current_user == post.author %}
+                        <a href="{{ url_for('.edit', id=post.id) }}"><span class="label label-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 编辑</span></a>
+                        {% elif current_user.is_administrator() %}
+                        <a href="{{ url_for('.edit', id=post.id) }}"><span class="label label-danger">编辑 [管理员]</span></a>
+                        {% endif %}
+                        <a href="/" class="btn btn-xs ">返回首页<span class=" glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+            </article>
+        </div>
+    </div>
 </div>
-{% endif %}
+
+<div class="container">
+    <div class="row" style="padding:50px 20px;">
+        <h4 id="comments"><i class="fa fa-commenting" aria-hidden="true"></i> 评论：</h4>
+        {% if current_user.can(Permission.COMMENT) %}
+        <div class="comment-form">
+            {{ wtf.quick_form(form) }}
+        </div>
+        {% endif %}
+        {% include '_comments.html' %}
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

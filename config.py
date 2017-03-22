@@ -1,3 +1,5 @@
+#-*- coding:utf-8 -*-
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,9 +16,9 @@ class Config:
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_MAIL_SENDER = 'Flasky Admin <1932840832@qq.com>'
     FLASKY_ADMIN = 'faiwongyip@outlook.com' #os.environ.get('FLASKY_ADMIN')
-    FLASKY_POSTS_PER_PAGE = 20
-    FLASKY_FOLLOWERS_PER_PAGE = 20
-    FLASKY_COMMENTS_PER_PAGE = 20
+    FLASKY_POSTS_PER_PAGE = 5
+    FLASKY_FOLLOWERS_PER_PAGE = 10
+    FLASKY_COMMENTS_PER_PAGE = 10
     FLASKY_SLOW_DB_QUERY_TIME = 0.5
     SSL_DISABLE = True
     

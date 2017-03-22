@@ -1,3 +1,5 @@
+#-*- coding:utf-8 -*-
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
@@ -282,14 +284,21 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-    
+
+
+                        
+                        
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    title = db.Column(db.String(64))
+    body = db.Column(db.Text)
     body_html = db.Column(db.Text)
+    summury = db.Column(db.Text)
+    summury_html = db.Column(db.Text)
+    category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     
     def to_json(self):
@@ -327,16 +336,32 @@ class Post(db.Model):
                     author=u)
             db.session.add(p)
             db.session.commit()
-        
+    
+    @staticmethod    
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
+                        'h1', 'h2', 'h3', 'p', 'img']
+        attrs = {
+            '*': ['class'],
+            'a': ['href', 'rel'],
+            'img': ['src', 'alt']
+        }
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
+            tags=allowed_tags, attributes=attrs, strip=True))
+                     
+            
+    @staticmethod
+    def on_changed_summury(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'blockquote','em', 'i',
+                            'strong','li','ol','pre','strong','ul','h1','h2','h3','p']
+        target.summury_html = bleach.linkify(bleach.clean(
+                markdown(value, output_format='html'),
+             tags=allowed_tags, strip=True))
             
 db.event.listen(Post.body, 'set', Post.on_changed_body)
+db.event.listen(Post.summury, 'set', Post.on_changed_summury)
         
         
 class Comment(db.Model):
@@ -372,11 +397,27 @@ class Comment(db.Model):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
                         'strong']
         target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, out_farmat='html'),
-            tags=allowed_tags, strip=True))
+                                markdown(value, out_farmat='html'),
+                                tags=allowed_tags, strip=True))
             
 db.event.listen(Comment.body, 'set', Comment.on_change_body)
+            
         
-        
-        
-        
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(64),unique=True)
+    posts = db.relationship('Post',backref='category',lazy='dynamic')
+
+    @staticmethod
+    def insert_categories():
+        categories = [u'web开发', u'数据挖掘', u'flask', u'python', u'爬虫', u'前端开发', u'基础知识', u'笔记', u'随记']
+        for category in categories:
+            postcategory=Category.query.filter_by(name=category).first()
+            if postcategory is None:
+                postcategory = Category(name=category)
+                db.session.add(postcategory)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Category %r>' % self.name

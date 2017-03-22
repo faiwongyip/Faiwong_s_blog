@@ -1,3 +1,5 @@
+#-*- coding:utf-8 -*-
+
 from flask_httpauth import HTTPBasicAuth
 from .errors import forbidden, unauthorized
 from flask import g, jsonify

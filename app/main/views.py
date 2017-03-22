@@ -1,6 +1,8 @@
-from flask import render_template, abort, flash, redirect, url_for, request, current_app, make_response
+#-*- coding:utf-8 -*-
+
+from flask import render_template, abort, flash, redirect, url_for, request, current_app, make_response, g
 from . import main
-from ..models import Role, User, Permission, Post, Follow, Comment
+from ..models import Role, User, Permission, Post, Follow, Comment, Category
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from flask_login import current_user, login_required
 from .. import db
@@ -13,8 +15,11 @@ def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
-        post = Post(body=form.body.data,
-                    author=current_user._get_current_object())
+        post = Post(title=form.title.data, 
+                    category=Category.query.get(form.category.data),
+                    body=form.body.data,
+                    summury=form.summury.data,
+                    author=current_user._get_current_object()) 
         db.session.add(post)
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
@@ -32,6 +37,18 @@ def index():
     return render_template('index.html', form=form, posts=posts,
                             show_followed=show_followed, pagination=pagination)
 
+
+@main.route('/category/<int:id>')
+def category(id):
+    category = Category.query.get_or_404(id)
+    page = request.args.get('page',1,type=int)
+    pagination = category.posts.order_by(Post.timestamp.desc()).paginate(
+        page,per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False
+    )
+    posts = pagination.items
+    return render_template('category.html',category=category,posts=posts,pagination=pagination)
+                    
                             
 @main.route('/all')
 @login_required
@@ -70,7 +87,7 @@ def edit_profile():
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
-        flash('Your profile has been updated')
+        flash(u'你的资料已更新')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
@@ -93,7 +110,7 @@ def edit_profile_admin(id):
         user.location = form.location.data
         user.about_me = form.about_me.data
         db.session.add(user)
-        flash('The profile has been updated.')
+        flash(u'资料已更新')
         return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
     form.username.data = user.username
@@ -114,7 +131,7 @@ def post(id):
                             post=post,
                             author=current_user._get_current_object())
         db.session.add(comment)
-        flash('Your comment has been published')
+        flash(u'留言成功')
         return redirect(url_for('.post', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
     if page == -1:
@@ -124,7 +141,7 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], 
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
+    return render_template('post.html', post=post, form=form,
                             comments=comments, pagination=pagination)
 
     
@@ -137,11 +154,17 @@ def edit(id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
-        post.body = form.body.data
+        post.title=form.title.data
+        post.body=form.body.data
+        post.summury=form.summury.data
+        post.category=Category.query.get(form.category.data)
         db.session.add(post)
-        flash('The post has been updated')
+        flash(u'文章已更新')
         return redirect(url_for('.post', id=post.id))
+    form.title.data = post.title
     form.body.data = post.body
+    form.summury.data = post.summury
+    form.category.data = post.category_id
     return render_template('edit_post.html', form=form)
     
   
@@ -151,13 +174,13 @@ def edit(id):
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('Invalid user.')
+        flash(u'无效用户')
         return redirect(url_for('.index'))
     if current_user.is_following(user):
-        flash('You are already following this user.')
+        flash(u'你已经关注过此用户')
         return redirect(url_for('.user', username=username))
     current_user.follow(user)
-    flash('You are now following %s.' % username)
+    flash(u'成功关注 %s.' % username)
     return redirect(url_for('.user', username=username))  
 
     
@@ -167,13 +190,13 @@ def follow(username):
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('Invalid user.')
+        flash(u'无效用户')
         return redirect(url_for('.index'))
     if not current_user.is_following(user):
-        flash('You are not following this user.')
+        flash(u'你还没关注此用户')
         return redirect(url_for('.user', username=username))
     current_user.unfollow(user)
-    flash('You are not following %s anymore.' % username)
+    flash(u'你取消了关注 %s' % username)
     return redirect(url_for('.user', username=username))
 
     
@@ -181,7 +204,7 @@ def unfollow(username):
 def followers(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('Invalid user')
+        flash(u'无效用户')
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
@@ -198,7 +221,7 @@ def followers(username):
 def followed_by(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('Invalid user')
+        flash(u'无效用户')
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = user.followed.paginate(
@@ -255,6 +278,16 @@ def server_shutdown():
         abort(500)
     shutdown()
     return 'shutting down...'
+
+
+@main.route('/about',methods=['GET'])
+def about_me():
+	return render_template('about_me.html')
+    
+    
+@main.before_app_request
+def before_request(): 
+    g.categories=Category.query.all()
     
     
 @main.after_app_request

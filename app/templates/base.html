@@ -1,79 +1,123 @@
 {% extends "bootstrap/base.html" %}
-
-{% block title %}Flasky{% endblock %}
+{% block html_attribs %}lang="zh-CN"{% endblock html_attribs %}
+{% block title %}Faiwong'Blog{% endblock %}
 
 {% block head %}
-{{ super() }}
-<link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="imge/x-icon">
-<link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="imge/x-icon">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    {{ super() }}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="{{ url_for('static', filename = 'myicon.ico') }}" type="imge/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename = 'myicon.ico') }}" type="imge/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mystyle.css') }}">
+    <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet">
+    <style type="text/css">
+        h1{
+            font-size:50px;
+        }
+        h2{
+            font-size: 40px;
+        }
+        h3{
+            font-size: 30px;
+        }
+        p{
+            font-size: 15px;
+        }
+        blockquote p{
+            font-size: 17px;
+        }
+        body{
+            font-size: 15px;
+            background-color:#d4dcd6;
+        }
+    </style>
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">Flasky</a>
+    <nav class="navbar-default navbar-Amethyst" style="padding:50px 0px;background:#d4dcd6;">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+                <a class="navbar-brand" href="/">BLOG</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse-01">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                    <li><a href="/about">关于我</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.user', username=current_user.username) }}">资料</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                    <li><a href="{{ url_for('main.moderate') }}">管理评论</a></li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdownMenu1">
+                            <img src="{{ current_user.gravatar(size=18) }}"> 账户<b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                            <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
+                            <li><a href="{{ url_for('auth.change_email_request') }}">修改邮件地址</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">登录</a></li>
+                    {% endif %}
+                </ul>
+                
+            </div>
         </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-                {% if current_user.is_authenticated %}
-                <li>
-                    <a href="{{ url_for('main.user', username=current_user.username) }}">
-                        Profile
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-                <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
-                {% endif %}
-                {% if current_user.is_authenticated %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ current_user.gravatar(size=18) }}">
-                        Account<b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('auth.change_password') }}">
-                            Change Password</a></li>
-                        <li><a href="{{ url_for('auth.change_email_request') }}">
-                            Change Email Address</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
-                    </ul>
-                </li>
-                {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</div>
+    </nav>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
+    {% block page_bottom %}{% endblock %} 
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+            
     </div>
-    {% endfor %}
-    
-    {% block page_content %}{% endblock %}
-    
-</div>
+    {% block page_content %}{% endblock %}   
+    <div style="background:#426579 none repeat scroll 0% 0%;color:#BFC9D3">
+            <div class="container">
+                <div class="row" style="padding-top:30px;">
+                    <div class="col-md-7">
+                        <h5 style="margin-bottom:15px;margin-left:18px;"><strong>ABOUT</strong></h5>
+                        <p style="padding:10px 150px 10px 20px"><strong>Faiwong ' Blog </strong>  &nbsp本博客属个人所有，不涉及商业目的。基于flask和bootstrap编写，用于记录互联网学习，个人感想的博客网站。网站部署在云平台heroku上。</p>
+                        
+                    </div>
+                    <div class="col-md-5">
+                        <div>
+                            <h5 style="margin-bottom:15px;margin-left:18px;"><strong>CONTACT ME</strong></h5>
+                            <ul class="list-unstyled" style="margin-bottom:15px;margin-left:30px;">
+                                <li><a href="http://weibo.com/2287266893/profile?topnav=1&wvr=6&is_all=1"><i class="fa fa-weibo" aria-hidden="true"></i> &nbsp Faiwong_Yip</a></li>
+                                <li><a href="https://github.com/Fai-Wong"><i class="fa fa-github" aria-hidden="true"></i> &nbsp github.com/Fai-Wong</a></li>
+                                <li><a href="#"><i class="fa fa-envelope" aria-hidden="true" fa-5x></i> &nbsp faiwongyop@outlook.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center" style="padding-top:30px;">
+                        <p> <small>© COPYRIGHT BY FAIWONG 2017</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    <script src="http://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='mystyle.js') }}"></script>
 {% endblock %}

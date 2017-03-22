@@ -2,35 +2,54 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Flasky{% endblock %}
+{% block page_bottom %}
+    <div class="jumbotron" style="padding-bottom:100px;background:#426579;">
+        <div class="container">
+            <h2 style="color:#E7DBDB">Faiwong ' Blog</h2>
+            <p class="lead" style="color:#E7DBDB">Keep on going never give up. </p>
+            <a href="about"><button class="btn btn-danger btn-wide the-font">关于我</button></a>
+        </div>
+    </div>
+{% endblock %} 
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Hello, {% if current_user.is_authenticated %}{{ current_user.
-        username }}{% else %}Stranger{% endif %}!</h1>
-</div>
-<div>
-    {% if current_user.can(Permission.WRITE_ARTICLES) %}
-    {{ wtf.quick_form(form) }}
-    {% endif %}
-</div>
-
-<div class="post-tabs">
-    <ul class="nav nav-tabs">
-        <li{% if not show_followed %} class="active"{% endif %}>
-            <a href="{{ url_for('.show_all') }}">All</a></li>
-        {% if current_user.is_authenticated %}
-        <li{% if show_followed %} class="active"{% endif %}><a href="{{ 
-            url_for('.show_followed') }}">Followers</a></li>
-        {% endif %}
-    </ul>
-    {% include '_posts.html' %} 
-</div>
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.index') }}
-</div>
-{% endif %}
+    <div class="container">
+        <div class="row" style="padding:30px 20px;">
+            <div class="col-md-12">
+            {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+            {% include '_posts.html' %} 
+            </div>
+            <div class="col-md-3">
+                <div class="share mrl the-font" style="background:#fbfaf5;box-shadow:5px 5px 20px #CCC;width:260px;">
+                    <div style="padding:10px;">
+                        <div style="border-bottom:1px solid #DAD4D4;;padding:10px 10px;">
+                            <h5><i class="fa fa-paperclip" aria-hidden="true"></i> 分类</h5>
+                        </div>
+                        <ul>
+                            {% for category in g.categories %}
+                                {% if category.posts.count() %}
+                                <li class="presentation" style="padding-top:0px;"><a href="{{ url_for('main.category',id=category.id)}}"><p><span style="font-size:15px;"><i class="fa fa-search" aria-hidden="true"></i> {{ category.name|upper }}</span><span class="badge text-right" style="float:right">{{ category.posts.count() }}</span></p></a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% if pagination %}
+            <div  class="col-md-12">
+                {{ macros.pagination_widget(pagination, '.index') }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}

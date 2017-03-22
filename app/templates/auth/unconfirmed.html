@@ -1,18 +1,22 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky - Confirm your account{% endblock %}
+{% block title %}确认账户{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Hello,{{ current_user.username }}!</h1>
-    <h3>You have not confirmed your account yet.</h3>
-    <p>
-        Before you can access this site you need to confirm your account. Check your inbox, you should have received an email with a confirmation link.
-    </p>
-    <p>
-        Need another confirmation email?
-        <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
-    </p>
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h1>Hello,{{ current_user.username }}!</h1>
+            <h3>你还没确认你的账户</h3>
+            <p>
+                在使用之前你需要确认你的账户。检查你的注册邮箱，你会收到一封带有确认信息的邮件！
+            </p>
+            <p>
+                再次发送认证邮件?
+                <a href="{{ url_for('auth.resend_confirmation') }}">点击我</a>
+            </p>
+        </div>
+    </div>
 </div>
 {% endblock %}
