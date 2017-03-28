@@ -8,7 +8,7 @@
                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                 <span style="color:#8C8C8C;"> {{ moment(post.timestamp).format('YYYY/MM/DD') }}</span>
             </small>
-            <a href="#" style="float:right">
+            <a href="{{ url_for('main.category',id=post.category.id)}}" style="float:right">
                 <span class="label label-success"><i class="fa fa-paperclip" aria-hidden="true"></i> {{ post.category.name }}</span>
             </a>
         </p>
@@ -42,6 +42,6 @@
             </span>
         </div>
     </article>
-    {% endfor %}
+{% endfor %}
 
 

@@ -1,19 +1,19 @@
 .article{
-	box-shadow:5px 5px 20px #CCC;
-	background-color:white;padding:20px 30px;
-	margin-bottom:40px;
+    box-shadow:5px 5px 20px #CCC;
+    background-color:white;padding:20px 30px;
+    margin-bottom:40px;
 }
 .write-form-btn{
-	margin-top:12px;
+    margin-top:12px;
 }
 .post-alert{
-	border:1px solid #EEE;
-	border-left:5px solid #CE4844;
-	padding:10px;
-	font-size: 15px;
+    border:1px solid #EEE;
+    border-left:5px solid #CE4844;
+    padding:10px;
+    font-size: 15px;
 }
 .article pre{
-	padding: 13px;
+    padding: 13px;
 margin: 0px 0px 15px;
 font-size: 13px;
 line-height: 1.72222;
@@ -25,7 +25,7 @@ border-radius: 6px;
 font-weight: bold;
 }
 .flask-pagedown-preview pre{
-	padding: 13px;
+    padding: 13px;
 margin: 0px 0px 15px;
 font-size: 13px;
 line-height: 1.72222;
@@ -37,7 +37,7 @@ border-radius: 6px;
 font-weight: bold;
 }
 .article hr{
-	margin-top: 20px;
+    margin-top: 20px;
 margin-bottom: 20px;
 border-width: 1px 0px 0px;
 border-style: solid none none;
@@ -49,16 +49,16 @@ border-color: #5F5F5F -moz-use-text-color -moz-use-text-color;
 border-image: none;
 }
 .article blockquote{
-	padding: 8px 8px 8px 16px;
+    padding: 8px 8px 8px 16px;
 margin: 0px 0px 30px;
 border-left: 3px solid #6C9EE9;
 background-color: #EDEDED;
 }
 .the-font{
-	font-family:"Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
+    font-family:"Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
 }
 form blockquote{
-	padding: 8px 8px 8px 16px;
+    padding: 8px 8px 8px 16px;
 margin: 0px 0px 30px;
 border-left: 3px solid #6C9EE9;
 background-color: #EDEDED;

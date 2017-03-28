@@ -232,28 +232,6 @@ class User(UserMixin, db.Model):
                 user.follow(user)
                 db.session.add(user)
                 db.session.commit()
-    
-    @staticmethod
-    def generate_fake(count=100):
-        from sqlalchemy.exc import IntegrityError
-        from random import seed
-        import forgery_py
-        
-        seed()
-        for i in range(count):
-            u = User(email=forgery_py.internet.email_address(),
-                    username=forgery_py.internet.user_name(True),
-                    password=forgery_py.lorem_ipsum.word(),
-                    confirmed=True,
-                    name=forgery_py.name.full_name(),
-                    location=forgery_py.address.city(),
-                    about_me=forgery_py.lorem_ipsum.sentence(),
-                    member_since=forgery_py.date.date(True))
-            db.session.add(u)
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
 
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'],
@@ -284,9 +262,7 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-
-                        
+                       
                         
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -321,21 +297,6 @@ class Post(db.Model):
         if body is None or body == '':
             raise ValidationError('post does not have a body')
         return Post(body=body)
-    
-    @staticmethod
-    def generate_fake(count=100):
-        from random import seed, randint
-        import forgery_py
-        
-        seed()
-        user_count = User.query.count()
-        for i in range(count):
-            u = User.query.offset(randint(0, user_count - 1)).first()
-            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 3)),
-                    timestamp=forgery_py.date.date(True),
-                    author=u)
-            db.session.add(p)
-            db.session.commit()
     
     @staticmethod    
     def on_changed_body(target, value, oldvalue, initiator):
