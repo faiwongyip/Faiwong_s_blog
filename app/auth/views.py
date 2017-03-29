@@ -141,7 +141,7 @@ def change_email_request():
             return redirect(url_for('main.index'))
         else:
             flash(u'无效的邮箱或密码！')
-    return render_template('auth/Change_email.html', form=form)
+    return render_template('auth/change_email.html', form=form)
 
 @auth.route('/change-email/<token>')
 @login_required
