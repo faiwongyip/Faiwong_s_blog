@@ -1,4 +1,4 @@
-#Faiwong's Blog
+**Faiwong's Blog**
 
 博客地址：[https://fwyip.herokuapp.com/](https://fwyip.herokuapp.com/)
 
@@ -14,4 +14,4 @@
 
 越来越发觉得编程和python的趣味性了，能做很多有趣的事情，找到了学习的动力，加油~
 
-![](https://app.yinxiang.com/shard/s41/res/a8b21e9c-e073-4c2b-9649-87574b9d2152)
+![](https://github.com/Fai-Wong/Faiwong-s-blog/tree/master/app/static/web_screenshot)
